@@ -184,7 +184,6 @@ Drone knowledge is used only to design meaningful automated tests, not to implem
 │   └── test_heartbeat.py   # Automated MAVLink tests
 ├── docker-compose.yml      # Container orchestration
 ├── requirements.txt        # Python dependencies
-├── INTERVIEW_PREP.md       # Interview Q&A reference
 └── README.md               # This file
 ```
 
