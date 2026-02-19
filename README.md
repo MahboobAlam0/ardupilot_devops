@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 What This Project Does
+## What This Project Does
 
 This is a **DevOps project** that demonstrates how to build a CI/CD pipeline for drone simulation software. It:
 
@@ -18,7 +18,7 @@ This is a **DevOps project** that demonstrates how to build a CI/CD pipeline for
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```mermaid
 graph LR
@@ -33,7 +33,7 @@ graph LR
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Tool | Purpose |
 |-------|------|---------|
@@ -45,7 +45,7 @@ graph LR
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 .
@@ -65,7 +65,7 @@ graph LR
 
 ---
 
-## 🚀 How to Run Locally
+## How to Run Locally
 
 ### Prerequisites
 - Docker Desktop installed and running
@@ -100,7 +100,7 @@ docker compose down
 
 ---
 
-## ✅ What the Tests Verify
+## What the Tests Verify
 
 | Test | What it checks | Why it matters |
 |------|---------------|----------------|
@@ -111,7 +111,7 @@ docker compose down
 
 ---
 
-## 🔄 CI Pipeline
+## CI Pipeline
 
 On every push or PR to `main`:
 
@@ -124,7 +124,7 @@ On every push or PR to `main`:
 
 ---
 
-## ⚠️ Honest Limitations
+## Honest Limitations
 
 | Limitation | Explanation |
 |-----------|-------------|
@@ -137,7 +137,7 @@ On every push or PR to `main`:
 
 ---
 
-## 🔮 Future Improvements
+## Future Improvements
 
 - [ ] Add container vulnerability scanning (Trivy)
 - [ ] Add test for autonomous takeoff command
@@ -147,11 +147,3 @@ On every push or PR to `main`:
 - [ ] Pre-built SITL binary caching to speed up CI
 
 ---
-
-## 📄 License
-
-MIT
-
----
-
-> **Note:** Replace `<YOUR_USERNAME>` with your GitHub username after pushing to GitHub.
