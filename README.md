@@ -2,7 +2,7 @@
 
 > Automated Build, Simulate & Test pipeline for ArduPilot drone firmware using Docker and GitHub Actions.
 
-[![ArduPilot SITL CI](https://github.com/<YOUR_USERNAME>/ArduPilot_devops/actions/workflows/ci.yml/badge.svg)](https://github.com/<YOUR_USERNAME>/ArduPilot_devops/actions/workflows/ci.yml)
+[![ArduPilot SITL CI](https://github.com/MahboobAlam0/ArduPilot_devops/actions/workflows/ci.yml/badge.svg)](https://github.com/MahboobAlam0/ArduPilot_devops/actions/workflows/ci.yml)
 
 ---
 
@@ -76,7 +76,7 @@ graph LR
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/<YOUR_USERNAME>/ArduPilot_devops.git
+git clone https://github.com/MahboobAlam0/ArduPilot_devops.git
 cd ArduPilot_devops
 
 # 2. Build the SITL Docker image (takes ~15 min first time)
