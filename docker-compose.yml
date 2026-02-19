@@ -1,0 +1,19 @@
+# ============================================================
+# docker-compose.yml — ArduPilot SITL DevOps Pipeline
+# ============================================================
+
+services:
+  sitl:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: ardupilot-sitl
+    ports:
+      - "5760:5760"
+    healthcheck:
+      test: [ "CMD", "python3", "-c", "import socket; s=socket.socket(); s.settimeout(3); s.connect(('localhost',5760)); s.close()" ]
+      interval: 10s
+      timeout: 5s
+      start_period: 90s
+      retries: 6
+    restart: "no"

@@ -1,0 +1,110 @@
+# ============================================================
+# ArduPilot SITL CI Pipeline
+# ============================================================
+# Trigger: On push/PR to main
+# What it does:
+#   1. Builds the SITL Docker image
+#   2. Starts the SITL simulator in a container
+#   3. Runs automated MAVLink health-check tests
+#   4. Tears everything down
+# ============================================================
+
+name: ArduPilot SITL CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    name: Build SITL & Run Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30  # SITL build from source takes ~15 min
+
+    steps:
+      # ---- Step 1: Checkout code ----
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ---- Step 2: Set up Docker Buildx (for caching) ----
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # ---- Step 3: Cache Docker layers ----
+      # This dramatically speeds up subsequent builds
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashFiles('docker/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      # ---- Step 4: Build SITL Docker image ----
+      - name: Build SITL Docker image
+        run: |
+          docker compose build
+
+      # ---- Step 5: Start SITL container ----
+      - name: Start SITL container
+        run: |
+          docker compose up -d
+          echo "Container started. Waiting for SITL to initialize..."
+
+      # ---- Step 6: Wait for SITL to be healthy ----
+      - name: Wait for SITL health check
+        run: |
+          echo "Waiting for SITL to pass health check..."
+          TIMEOUT=180
+          ELAPSED=0
+          while [ $ELAPSED -lt $TIMEOUT ]; do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' ardupilot-sitl 2>/dev/null || echo "not_found")
+            echo "  Health status: $STATUS (${ELAPSED}s / ${TIMEOUT}s)"
+            if [ "$STATUS" = "healthy" ]; then
+              echo "✅ SITL is healthy!"
+              break
+            fi
+            if [ "$STATUS" = "unhealthy" ]; then
+              echo "❌ SITL is unhealthy. Dumping logs:"
+              docker logs ardupilot-sitl --tail 50
+              exit 1
+            fi
+            sleep 10
+            ELAPSED=$((ELAPSED + 10))
+          done
+          if [ $ELAPSED -ge $TIMEOUT ]; then
+            echo "❌ Timeout waiting for SITL. Dumping logs:"
+            docker logs ardupilot-sitl --tail 50
+            exit 1
+          fi
+
+      # ---- Step 7: Install Python test dependencies ----
+      - name: Install test dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ---- Step 8: Run MAVLink health-check tests ----
+      - name: Run SITL tests
+        run: |
+          pytest tests/test_heartbeat.py -v --tb=short
+        env:
+          SITL_CONNECTION: "tcp:localhost:5760"
+
+      # ---- Step 9: Cleanup ----
+      - name: Tear down containers
+        if: always()
+        run: |
+          docker compose down
+          docker compose logs > sitl_logs.txt 2>&1 || true
+
+      # ---- Step 10: Upload logs on failure ----
+      - name: Upload SITL logs (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitl-logs
+          path: sitl_logs.txt
+          retention-days: 7
